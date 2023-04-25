@@ -12,5 +12,7 @@ func handler(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		log.Printf("Ошибка %s", err)
 	}
-	nats.InitPublisher(data)
+	w.WriteHeader(http.StatusOK)
+	w.Write([]byte("Employee was added successfully"))
+	nats.Publisher(data)
 }

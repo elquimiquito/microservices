@@ -27,14 +27,8 @@ func handler(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		log.Printf("Ошибка %s", err)
 	}
-	w.Write(data)
-}
-
-func errorResponse(w http.ResponseWriter, message string, httpStatusCode int) {
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(httpStatusCode)
-	resp := make(map[string]string)
-	resp["message"] = message
-	jsonResp, _ := json.Marshal(resp)
-	w.Write(jsonResp)
+	_, err = w.Write(data)
+	if err != nil {
+		log.Fatal(err)
+	}
 }

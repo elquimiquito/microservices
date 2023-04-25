@@ -11,7 +11,7 @@ import (
 	"time"
 )
 
-func reader() {
+func Reader() {
 	sc := nats.OpenNATS()
 	sc.Subscribe("msg", insert, stan.StartAtTime(time.Now()), stan.SetManualAckMode())
 	defer sc.Close()
@@ -32,8 +32,4 @@ func insert(m *stan.Msg) {
 		log.Printf("Ошибка %s", err)
 	}
 	proxy.Insert(&e)
-}
-
-func Init() {
-	reader()
 }

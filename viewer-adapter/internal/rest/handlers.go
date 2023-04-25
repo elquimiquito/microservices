@@ -1,9 +1,9 @@
 package rest
 
 import (
-	"Wildberries_services/repository"
 	"encoding/json"
-	"io"
+	"fmt"
+	"github.com/go-resty/resty/v2"
 	"log"
 	"net/http"
 )
@@ -13,22 +13,22 @@ func handler(w http.ResponseWriter, r *http.Request) {
 		errorResponse(w, "Content type is not application/json", http.StatusUnsupportedMediaType)
 		return
 	}
-	//data, err := io.ReadAll(r.Body)
-	//if err != nil {
-	//	log.Printf("Ошибка %s", err)
-	//}
-	resp, err := http.Post("http://localhost:7071", "application/json", r.Body)
+	fmt.Println(r.Body)
+
+	client := resty.New()
+	resp, err := client.R().
+		SetHeader("Content-type", "application/json").
+		SetBody(r.Body).
+		Post("http://localhost:7071")
 	if err != nil {
-		log.Printf("Ошибка %s", err)
+		log.Fatal(err)
 	}
-	var e repository.Employee
-	body, err := io.ReadAll(resp.Body)
-	w.Write(body)
+	fmt.Println(resp.Body())
+	_, err = w.Write(resp.Body())
 	if err != nil {
-		log.Printf("Ошибка %s", err)
+		log.Fatal(err)
 	}
-	err = json.Unmarshal(body, &e)
-	//defer resp.Body.Close()
+
 }
 
 func errorResponse(w http.ResponseWriter, message string, httpStatusCode int) {

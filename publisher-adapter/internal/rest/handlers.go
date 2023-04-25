@@ -1,8 +1,8 @@
 package rest
 
 import (
-	"bytes"
 	"encoding/json"
+	"github.com/go-resty/resty/v2"
 	"io"
 	"log"
 	"net/http"
@@ -17,11 +17,15 @@ func handler(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		log.Printf("Ошибка %s", err)
 	}
-	_, err = http.Post("http://localhost:8081", "application/json", bytes.NewBuffer(data))
+
+	client := resty.New()
+	resp, err := client.R().
+		SetBody(data).
+		Post("http://localhost:8081")
+	_, err = w.Write(resp.Body())
 	if err != nil {
-		log.Printf("Ошибка %s", err)
+		log.Fatal(err)
 	}
-	//defer resp.Body.Close()
 }
 
 func errorResponse(w http.ResponseWriter, message string, httpStatusCode int) {
